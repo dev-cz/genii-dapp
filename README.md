@@ -1,6 +1,6 @@
-# dApp Starter Boilerplate
+# Genii Staking dApp
 
-A dApp starter kit template to quick start a dapp project with Next.js + Tailwind CSS + Ethers + wagmi + RainbowKit.
+A dapp built with Next.js + Tailwind CSS + Ethers + wagmi + RainbowKit.
 
 Other tools/components included: Headless UI, Heroicons, Autoprefixer, Sass, PostCSS, ESLint, Prettier.
 
