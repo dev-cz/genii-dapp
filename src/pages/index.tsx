@@ -21,7 +21,11 @@ export default function Home() {
 function Header() {
   return (
     <header className={styles.header}>
-      <div></div>
+      <div className="flex w-1/3 justify-start">
+        <a href="https://nahmii.io/" target="_blank" rel="noopener noreferrer">
+          <img src="/genii-icon.png" alt="wordlogo" width={80} height={30} />
+        </a>
+      </div>
       <div className="flex items-center"></div>
       <div className="flex items-center">
         <div className='px-2'>
@@ -175,7 +179,7 @@ function Main() {
 
   return (
     <main className={styles.main}>
-      <div className="w-full max-w-xl rounded-xl bg-white dark:bg-[#15181f] p-5 text-center text-[#495264] dark:text-white">
+      <div className="w-full max-w-xl rounded-xl bg-white/100 dark:bg-[#15181f]/100 p-5 text-center text-[#495264] dark:text-white">
         <div className="text-center font-bold text-3xl text-transparent bg-clip-text bg-gradient-to-r from-[#ff44c9] to-[#00b8fa]">Genii Staking</div>
         {isConnected ?
         <dl className={styles.dl}>
