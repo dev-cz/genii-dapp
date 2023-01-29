@@ -202,6 +202,7 @@ function Main() {
             </dd>
           <dt>Stake GENII</dt>
           <dd>
+            {GeniiTokenBalance?.value.toString() > '0' ?
             <div>
               <input
                 className='text-center font-2xl inline-block w-[10rem] h-[2rem] p-2'
@@ -213,6 +214,8 @@ function Main() {
                 onChange={event => {setGeniiToStake(Number(event.target.value))}}
               />
             </div>
+            :
+            null}
             <div className="flex justify-center text-center">
               <div className="p-1">
                 <button
