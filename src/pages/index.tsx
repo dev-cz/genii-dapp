@@ -49,6 +49,12 @@ function Main() {
 
   const [geniiToUnStake, setGeniiToUnStake] = useState(0)
 
+  const { data: TotalGeniiStaked, isError: TotalGeniiStakedError, isLoading: TotalGeniiStakedLoading } = useContractRead({
+    address: GeniiStakingContract,
+    abi: GeniiStakingABI,
+    functionName: 'totalSupply',
+  })
+
   const { data: balance, isLoading: isBalanceLoading } = useBalance({
     address: address,
   })
@@ -215,18 +221,29 @@ function Main() {
     <main className={styles.main}>
       <div className="w-full max-w-xl rounded-xl bg-white/100 dark:bg-[#15181f]/100 p-5 text-center text-[#495264] dark:text-white">
         <div className="text-center font-bold text-3xl text-transparent bg-clip-text bg-gradient-to-r from-[#ff44c9] to-[#00b8fa]">Genii Staking</div>
+        <div className='flex justify-between bg-gradient-to-r from-[#ff44c9] to-[#00b8fa] p-4 rounded-md mt-2 text-white'>
+          <div>
+            <div>Total Genii Staked</div>
+            <div>{TotalGeniiStaked ? Number(formatUnits(TotalGeniiStaked?.toString(), 15))?.toLocaleString(undefined, {maximumFractionDigits: 2})+' GENII' : 'n/a'}</div>
+          </div>
+          <div>
+            <div>Reward Rate</div>
+            <div>N/A</div>
+          </div>
+          <div></div>
+        </div>
         {isConnected ?
         <dl className={styles.dl}>
           <div className='flex justify-center'>
             <div className='flex w-fit justify-between'>
               <div className='px-2'>
-                <dt>GENII Wallet Balance</dt>
+                <dt>My GENII Balance</dt>
                 <dd>
                   {isGeniiTokenBalanceLoading ? 'loading' : GeniiTokenBalance ? `${GeniiTokenBalance?.formatted} ${GeniiTokenBalance?.symbol}` : 'n/a'}
                 </dd>
               </div>
               <div className='px-2'>
-                <dt>Staked GENII</dt>
+                <dt>My Staked GENII</dt>
                 <dd>
                   {GeniiStakedBalanceLoading ? 'loading' : GeniiStakedBalance ? `${formatUnits(GeniiStakedBalance?.toString(), 15)} ${GeniiTokenBalance?.symbol}` : 'n/a'}
                 </dd>
