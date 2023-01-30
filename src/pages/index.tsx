@@ -134,6 +134,27 @@ function Main() {
     },
   })
 
+  const { config: claimStakedRewards, error: claimStakedRewardsError } = usePrepareContractWrite({
+    address: GeniiContract,
+    abi: GeniiStakingABI,
+    enabled: GeniiRewardsEarned?.toString() > '0',
+    functionName: 'getReward',
+  })
+
+  const {
+    data: claimStakedRewardsData,
+    isLoading: claimStakedRewardsLoading,
+    isSuccess: claimStakedRewardsSuccess,
+    write: claimStakedRewardsWrite,
+  } = useContractWrite(claimStakedRewards)
+
+  const claimStakedRewardsWaitForTransaction = useWaitForTransaction({
+    hash: claimStakedRewardsData?.hash,
+    onSuccess(claimStakedRewardsData) {
+      console.log('Success', claimStakedRewardsData)
+    },
+  })
+
   const { config: exitStakedToken, error: exitStakedTokenError } = usePrepareContractWrite({
     address: GeniiContract,
     abi: GeniiStakingABI,
@@ -201,8 +222,16 @@ function Main() {
           </div>
           <dt>Rewards</dt>
             <dd className="break-all">
-              Earned: {GeniiRewardsEarned?.toString()}
-
+              Earned: {formatUnits(GeniiRewardsEarned?.toString(), 15)} NII
+              <div className="p-1">
+                <button
+                  hidden={GeniiRewardsEarned?.toString() <= '0'}
+                  className="min-w-[8rem] rounded-md enabled:bg-gradient-to-r from-[#ff44c9] to-[#00b8fa] p-1.5 text-center text-sm text-white enabled:hover:scale-105 disabled:bg-gray-500"
+                  onClick={() => claimStakedRewardsWrite?.()}
+                >
+                  {claimStakedRewardsLoading || claimStakedRewardsWaitForTransaction.isLoading ? <a className='animate-pulse'>Claiming...</a> : <a>Claim</a>}
+                </button>
+              </div>
             </dd>
           <dt>Stake GENII</dt>
           <dd>
