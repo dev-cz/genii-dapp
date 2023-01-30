@@ -96,7 +96,7 @@ function Main() {
     args: [address, '0x48b514bF2ae5f23Ba60454302721E3534ae03e86'],
     watch: true,
     onSuccess(data) {
-      if (stakeAllowance.data?.toString() >= GeniiTokenBalance?.value?.toString()) {
+      if (GeniiTokenBalance?.value?.toString() > '0' && stakeAllowance.data?.toString() >= GeniiTokenBalance?.value?.toString()) {
         setApprovalComplete(true)
       }
     },
@@ -234,16 +234,18 @@ function Main() {
                   )}
                 </button>
               </div>
+              {approvalComplete ?
               <div className="p-1">
                 <button
                   disabled={!approvalComplete}
-                  hidden={GeniiTokenBalance?.value?.toString() == '0'}
                   className="min-w-[8rem] rounded-md enabled:bg-gradient-to-r from-[#ff44c9] to-[#00b8fa] p-1.5 text-center text-sm text-white enabled:hover:scale-105 disabled:bg-gray-500"
                   onClick={() => stakeTokenWrite?.()}
                 >
                   {stakeTokenLoading || stakeTokenWaitForTransaction.isLoading ? <a className='animate-pulse'>Staking...</a> : <a>Stake</a>}
                 </button>
               </div>
+              :
+              null}
               {GeniiTokenBalance?.value.toString() == '0' ?
                 <div>You have no GENII tokens to stake!</div>
                 :
@@ -251,39 +253,43 @@ function Main() {
               }
             </div>
           </dd>
-          <dt>Unstake GENII</dt>
+          <dt>Unstaking GENII</dt>
           {GeniiStakedBalance?.toString() > '0' ?
           <>
             <dd>There is an important difference between these functions, as <a className='font-bold'>exit</a> will unstake your tokens and claim any NII tokens you are due while <a className='font-bold'>withdraw</a> will unstake your tokens without claiming any due NII tokens.</dd>
-            <dd className='flex justify-center items-center'>
-              <div className="p-1">
-                <div className='p-2'>
-                  <input
-                    className='text-center font-2xl inline-block w-[10rem] h-[2rem] p-2'
-                    type="number"
-                    placeholder='Amount'
-                    pattern='^[0-9]*[.]?[0-9]*$'
-                    min="0"
-                    max={formatUnits(GeniiStakedBalance?.toString(), 15)}
-                    onChange={event => {setGeniiToUnStake(Number(event.target.value))}}
-                  />
+            <dd className='flex-col justify-center items-center'>
+              <dt>Withdraw GENII</dt>
+              <div>
+                <div className="p-1">
+                  <div className='p-2'>
+                    <input
+                      className='text-center font-2xl inline-block w-[10rem] h-[2rem] p-2'
+                      type="number"
+                      placeholder='Amount'
+                      pattern='^[0-9]*[.]?[0-9]*$'
+                      min="0"
+                      max={formatUnits(GeniiStakedBalance?.toString(), 15)}
+                      onChange={event => {setGeniiToUnStake(Number(event.target.value))}}
+                    />
+                  </div>
+                  <button
+                    disabled={GeniiStakedBalance?.toString() == '0'}
+                    className="min-w-[8rem] rounded-md enabled:bg-gradient-to-r from-[#ff44c9] to-[#00b8fa] p-1.5 text-center text-sm text-white enabled:hover:scale-105 disabled:bg-gray-500"
+                    onClick={() => withdrawStakedTokenWrite?.()}
+                  >
+                    {withdrawStakedTokenLoading || withdrawStakedTokenWaitForTransaction.isLoading ? <a className='animate-pulse'>Withdrawing...</a> : <a>Withdraw</a>}
+                  </button>
                 </div>
-                <button
-                  disabled={GeniiStakedBalance?.toString() == '0'}
-                  className="min-w-[8rem] rounded-md enabled:bg-gradient-to-r from-[#ff44c9] to-[#00b8fa] p-1.5 text-center text-sm text-white enabled:hover:scale-105 disabled:bg-gray-500"
-                  onClick={() => withdrawStakedTokenWrite?.()}
-                >
-                  {withdrawStakedTokenLoading || withdrawStakedTokenWaitForTransaction.isLoading ? <a className='animate-pulse'>Withdrawing...</a> : <a>Withdraw</a>}
-                </button>
               </div>
+              <dt>Exit GENII</dt>
               <div className="p-1">
-                <button
-                  disabled={GeniiStakedBalance?.toString() == '0'}
-                  className="min-w-[8rem] rounded-md enabled:bg-gradient-to-r from-[#ff44c9] to-[#00b8fa] p-1.5 text-center text-sm text-white enabled:hover:scale-105 disabled:bg-gray-500"
-                  onClick={() => exitStakedTokenWrite?.()}
-                >
-                  {exitStakedTokenLoading || exitStakedTokenWaitForTransaction.isLoading ? <a className='animate-pulse'>Exiting...</a> : <a>Exit</a>}
-                </button>
+                  <button
+                    disabled={GeniiStakedBalance?.toString() == '0'}
+                    className="min-w-[8rem] rounded-md enabled:bg-gradient-to-r from-[#ff44c9] to-[#00b8fa] p-1.5 text-center text-sm text-white enabled:hover:scale-105 disabled:bg-gray-500"
+                    onClick={() => exitStakedTokenWrite?.()}
+                  >
+                    {exitStakedTokenLoading || exitStakedTokenWaitForTransaction.isLoading ? <a className='animate-pulse'>Exiting...</a> : <a>Exit</a>}
+                  </button>
               </div>
             </dd>
           </>
