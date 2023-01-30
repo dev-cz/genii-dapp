@@ -53,12 +53,12 @@ function Main() {
     address: address,
   })
 
-  const { data: GeniiTokenBalance, isLoading: isGeniiTokenBalanceLoading } = useBalance({
+  const { data: GeniiTokenBalance, isLoading: isGeniiTokenBalanceLoading, refetch: GeniiTokenBalanceRefetch } = useBalance({
     address: address,
     token: '0x87Db20d78BA4d80cd99357B05BB8c75eC87836Fd',
   })
 
-  const { data: GeniiStakedBalance, isError: GeniiStakedBalanceError, isLoading: GeniiStakedBalanceLoading } = useContractRead({
+  const { data: GeniiStakedBalance, isError: GeniiStakedBalanceError, isLoading: GeniiStakedBalanceLoading, refetch: GeniiStakedBalanceRefetch } = useContractRead({
     address: GeniiStakingContract,
     abi: GeniiStakingABI,
     functionName: 'balanceOf',
@@ -120,7 +120,7 @@ function Main() {
   })
 
   const { config: stakeToken, error: stakeTokenError } = usePrepareContractWrite({
-    address: GeniiContract,
+    address: GeniiStakingContract,
     abi: GeniiStakingABI,
     enabled: approvalComplete,
     functionName: 'stake',
@@ -138,11 +138,13 @@ function Main() {
     hash: stakeTokenData?.hash,
     onSuccess(stakeTokenData) {
       console.log('Success', stakeTokenData)
+      GeniiTokenBalanceRefetch()
+      GeniiStakedBalanceRefetch()
     },
   })
 
   const { config: claimStakedRewards, error: claimStakedRewardsError } = usePrepareContractWrite({
-    address: GeniiContract,
+    address: GeniiStakingContract,
     abi: GeniiStakingABI,
     enabled: GeniiRewardsEarned?.toString() > '0',
     functionName: 'getReward',
@@ -163,7 +165,7 @@ function Main() {
   })
 
   const { config: exitStakedToken, error: exitStakedTokenError } = usePrepareContractWrite({
-    address: GeniiContract,
+    address: GeniiStakingContract,
     abi: GeniiStakingABI,
     enabled: GeniiStakedBalance?.toString() > '0',
     functionName: 'exit',
@@ -180,13 +182,15 @@ function Main() {
     hash: exitStakedTokenData?.hash,
     onSuccess(exitStakedTokenData) {
       console.log('Success', exitStakedTokenData)
+      GeniiTokenBalanceRefetch()
+      GeniiStakedBalanceRefetch()
     },
   })
 
   const { config: withdrawStakedToken, error: withdrawStakedTokenError } = usePrepareContractWrite({
-    address: GeniiContract,
+    address: GeniiStakingContract,
     abi: GeniiStakingABI,
-    enabled: GeniiStakedBalance?.toString() > '0',
+    enabled: geniiToUnStake?.toString() > '0',
     functionName: 'withdraw',
     args: [parseUnits(geniiToUnStake?.toString(), 15)]
   })
@@ -202,6 +206,8 @@ function Main() {
     hash: withdrawStakedTokenData?.hash,
     onSuccess(withdrawStakedTokenData) {
       console.log('Success', withdrawStakedTokenData)
+      GeniiTokenBalanceRefetch()
+      GeniiStakedBalanceRefetch()
     },
   })
 
@@ -245,12 +251,26 @@ function Main() {
                 </button>
               </div>
             </dd>
-          <dt>Stake GENII</dt>
+          <dt className='flex justify-center'>
+            Stake GENII 
+            {GeniiTokenBalance?.value.toString() > '0' ?
+            <div className='px-1'>
+              <button 
+                className='px-1 bg-gradient-to-r from-[#ff44c9] to-[#00b8fa] rounded-md text-xs text-white'
+                onClick={() => setGeniiToStake(Number(GeniiTokenBalance?.formatted))}
+              >
+                MAX
+              </button>
+            </div>
+            :
+            null
+            }
+          </dt>
           <dd>
             {GeniiTokenBalance?.value.toString() > '0' ?
-            <div className='flex justify-center items-center'>
+            <div className='flex ml-1 justify-center items-center p-2'>
               <input
-                className='text-center font-2xl inline-block w-[10rem] h-[2rem] p-2'
+                className='text-center font-2xl inline-block w-[8rem] h-[2rem] p-1 rounded-md'
                 type="number"
                 placeholder='Amount'
                 pattern='^[0-9]*[.]?[0-9]*$'
@@ -259,14 +279,6 @@ function Main() {
                 max={GeniiTokenBalance?.formatted}
                 onChange={event => {setGeniiToStake(Number(event.target.value))}}
               />
-              <div className='px-1'>
-                <button 
-                  className='p-1 bg-gradient-to-r from-[#ff44c9] to-[#00b8fa] rounded-md text-xs text-white'
-                  onClick={() => setGeniiToStake(Number(GeniiTokenBalance?.formatted))}
-                >
-                  MAX
-                </button>
-              </div>
             </div>
             :
             null}
@@ -291,7 +303,7 @@ function Main() {
                   className="min-w-[8rem] rounded-md enabled:bg-gradient-to-r from-[#ff44c9] to-[#00b8fa] p-1.5 text-center text-sm text-white enabled:hover:scale-105 disabled:bg-gray-500"
                   onClick={() => stakeTokenWrite?.()}
                 >
-                  {stakeTokenLoading || stakeTokenWaitForTransaction.isLoading ? <a className='animate-pulse'>Staking...</a> : <a>Stake</a>}
+                  {stakeTokenLoading || stakeTokenWaitForTransaction.isLoading ? <a className='animate-pulse'>Staking...</a> : <a> Stake</a>}
                 </button>
               </div>
               :
@@ -308,12 +320,22 @@ function Main() {
           <>
             <dd>There is an important difference between these functions, as <a className='font-bold'>exit</a> will unstake your tokens and claim any NII tokens you are due while <a className='font-bold'>withdraw</a> will unstake your tokens without claiming any due NII tokens.</dd>
             <dd className='flex-col justify-center items-center'>
-              <dt>Withdraw GENII</dt>
+              <dt className='flex justify-center'>
+                Withdraw GENII
+                <div className='px-1'>
+                  <button 
+                    className='px-1 bg-gradient-to-r from-[#ff44c9] to-[#00b8fa] rounded-md text-xs text-white'
+                    onClick={() => setGeniiToUnStake(Number(formatUnits(GeniiStakedBalance?.toString(), 15)))}
+                  >
+                    MAX
+                  </button>
+                </div>
+              </dt>
               <div>
                 <div className="p-1">
                   <div className='flex justify-center items-center p-2'>
                     <input
-                      className='text-center font-2xl inline-block w-[10rem] h-[2rem] p-2'
+                      className='text-center font-2xl inline-block w-[8rem] h-[2rem] p-1 rounded-md'
                       type="number"
                       placeholder='Amount'
                       pattern='^[0-9]*[.]?[0-9]*$'
@@ -322,14 +344,6 @@ function Main() {
                       max={formatUnits(GeniiStakedBalance?.toString(), 15)}
                       onChange={event => {setGeniiToUnStake(Number(event.target.value))}}
                     />
-                    <div className='px-1'>
-                      <button 
-                        className='p-1 bg-gradient-to-r from-[#ff44c9] to-[#00b8fa] rounded-md text-xs text-white'
-                        onClick={() => setGeniiToUnStake(Number(formatUnits(GeniiStakedBalance?.toString(), 15)))}
-                      >
-                        MAX
-                      </button>
-                    </div>
                   </div>
                   <button
                     disabled={GeniiStakedBalance?.toString() == '0'}
