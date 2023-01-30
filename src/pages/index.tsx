@@ -72,6 +72,13 @@ function Main() {
     args: [address],
   })
 
+  const { data: GeniiRewards, isError: GeniiRewardsError, isLoading: GeniiRewardsLoading } = useContractRead({
+    address: GeniiStakingContract,
+    abi: GeniiStakingABI,
+    functionName: 'rewards',
+    args: [address],
+  })
+
   const [approvalComplete, setApprovalComplete] = useState(false)
 
   const { config: approveStakeToken, error: approveStakeTokenError } = usePrepareContractWrite({
@@ -222,7 +229,12 @@ function Main() {
           </div>
           <dt>Rewards</dt>
             <dd className="break-all">
-              Earned: {formatUnits(GeniiRewardsEarned?.toString(), 15)} NII
+              <div>
+                Total Earned: {formatUnits(GeniiRewards?.toString(), 15)} NII
+              </div>
+              <div>
+                Claimable: {formatUnits(GeniiRewardsEarned?.toString(), 15)} NII
+              </div>
               <div className="p-1">
                 <button
                   hidden={GeniiRewardsEarned?.toString() <= '0'}
