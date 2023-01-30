@@ -230,10 +230,10 @@ function Main() {
           <dt>Rewards</dt>
             <dd className="break-all">
               <div>
-                Total Earned: {formatUnits(GeniiRewards?.toString(), 15)} NII
+                Total Earned: {GeniiRewardsLoading ? 'loading' : GeniiRewards ? formatUnits(GeniiRewards?.toString(), 15)+'NII' : 'n/a'}
               </div>
               <div>
-                Claimable: {formatUnits(GeniiRewardsEarned?.toString(), 15)} NII
+                Claimable: {GeniiRewardsEarnedLoading ? 'loading' : GeniiRewardsEarned ? formatUnits(GeniiRewardsEarned?.toString(), 15)+'NII' : 'n/a'}
               </div>
               <div className="p-1">
                 <button
@@ -248,16 +248,25 @@ function Main() {
           <dt>Stake GENII</dt>
           <dd>
             {GeniiTokenBalance?.value.toString() > '0' ?
-            <div>
+            <div className='flex justify-center items-center'>
               <input
                 className='text-center font-2xl inline-block w-[10rem] h-[2rem] p-2'
                 type="number"
                 placeholder='Amount'
                 pattern='^[0-9]*[.]?[0-9]*$'
+                value={geniiToStake}
                 min="0"
                 max={GeniiTokenBalance?.formatted}
                 onChange={event => {setGeniiToStake(Number(event.target.value))}}
               />
+              <div className='px-1'>
+                <button 
+                  className='p-1 bg-gradient-to-r from-[#ff44c9] to-[#00b8fa] rounded-md text-xs text-white'
+                  onClick={() => setGeniiToStake(Number(GeniiTokenBalance?.formatted))}
+                >
+                  MAX
+                </button>
+              </div>
             </div>
             :
             null}
@@ -302,16 +311,25 @@ function Main() {
               <dt>Withdraw GENII</dt>
               <div>
                 <div className="p-1">
-                  <div className='p-2'>
+                  <div className='flex justify-center items-center p-2'>
                     <input
                       className='text-center font-2xl inline-block w-[10rem] h-[2rem] p-2'
                       type="number"
                       placeholder='Amount'
                       pattern='^[0-9]*[.]?[0-9]*$'
+                      value={geniiToUnStake}
                       min="0"
                       max={formatUnits(GeniiStakedBalance?.toString(), 15)}
                       onChange={event => {setGeniiToUnStake(Number(event.target.value))}}
                     />
+                    <div className='px-1'>
+                      <button 
+                        className='p-1 bg-gradient-to-r from-[#ff44c9] to-[#00b8fa] rounded-md text-xs text-white'
+                        onClick={() => setGeniiToUnStake(Number(formatUnits(GeniiStakedBalance?.toString(), 15)))}
+                      >
+                        MAX
+                      </button>
+                    </div>
                   </div>
                   <button
                     disabled={GeniiStakedBalance?.toString() == '0'}
