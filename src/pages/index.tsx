@@ -296,7 +296,7 @@ function Main() {
                   )}
                 </button>
               </div>
-              {approvalComplete ?
+              {GeniiTokenBalance?.value.toString() > '0' && approvalComplete ?
               <div className="p-1">
                 <button
                   disabled={!approvalComplete}
