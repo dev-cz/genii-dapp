@@ -332,6 +332,7 @@ function Main() {
             </div>
             :
             null}
+            {GeniiTokenBalance?.value.toString() > '0' ?
             <div className="flex-col justify-center text-center">
               {geniiToStake > 0 ?
               <>
@@ -365,12 +366,14 @@ function Main() {
               <div>Input amount of GENII to stake.</div>
               }
               {GeniiTokenBalance?.value.toString() > '0' && stakeAllowance?.data && <div>Allowance: {formatUnits(stakeAllowance?.data?.toString(), 15)} GENII</div>}
-              {GeniiTokenBalance?.value.toString() == '0' ?
-                <div>You have no GENII tokens to stake!</div>
-                :
-                null
-              }
             </div>
+            :
+            null}
+            {GeniiTokenBalance?.value.toString() == '0' ?
+              <div>You have no GENII tokens to stake!</div>
+              :
+              null
+            }
           </dd>
           <dt>Unstaking GENII</dt>
           {GeniiStakedBalance?.toString() > '0' ?
@@ -403,7 +406,7 @@ function Main() {
                     />
                   </div>
                   <button
-                    disabled={GeniiStakedBalance?.toString() == '0'}
+                    disabled={GeniiStakedBalance?.toString() == '0' || geniiToUnStake == 0}
                     className="min-w-[8rem] rounded-md enabled:bg-gradient-to-r from-[#ff44c9] to-[#00b8fa] p-1.5 text-center text-sm text-white enabled:hover:scale-105 disabled:bg-gray-500"
                     onClick={() => withdrawStakedTokenWrite?.()}
                   >
