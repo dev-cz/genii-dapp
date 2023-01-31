@@ -70,6 +70,12 @@ function Main() {
     functionName: 'duration',
   })
 
+  const { data: GeniiRewardsRate, isError: GeniiRewardsRateError, isLoading: GeniiRewardsRateLoading } = useContractRead({
+    address: GeniiStakingContract,
+    abi: GeniiStakingABI,
+    functionName: 'rewardRate',
+  })
+
   const { data: GeniiStakedBalance, isError: GeniiStakedBalanceError, isLoading: GeniiStakedBalanceLoading, refetch: GeniiStakedBalanceRefetch } = useContractRead({
     address: GeniiStakingContract,
     abi: GeniiStakingABI,
@@ -249,7 +255,7 @@ function Main() {
           <div className='flex justify-between'>
             <div>
               <div>Reward Rate</div>
-              <div>N/A</div>
+              <div>{Number(GeniiRewardsRate)} per/sec</div>
             </div>
             <div>
               <div>Start Date</div>
@@ -285,10 +291,10 @@ function Main() {
           </div>
           <dt>Rewards</dt>
             <dd className="break-all">
-              <div>
+              <div className='hidden'>
                 Total Earned: {GeniiRewardsLoading ? 'loading' : GeniiRewards ? formatUnits(GeniiRewards?.toString(), 15)+' NII' : 'n/a'}
               </div>
-              <div>
+              <div className='hidden'>
                 Claimable: {GeniiRewardsEarnedLoading ? 'loading' : GeniiRewardsEarned ? formatUnits(GeniiRewardsEarned?.toString(), 15)+' NII' : 'n/a'}
               </div>
               <div className="p-1">
