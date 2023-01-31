@@ -1,6 +1,6 @@
 import styles from 'styles/Home.module.scss'
 import ThemeToggleButton from 'components/Theme/ThemeToggleButton'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNetwork, useSwitchNetwork, useAccount, useBalance, useContractRead, usePrepareContractWrite, useContractWrite, useWaitForTransaction, erc20ABI } from 'wagmi'
 import ConnectWallet from 'components/Connect/ConnectWallet'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
@@ -106,11 +106,14 @@ function Main() {
     address: GeniiContract,
     abi: erc20ABI,
     functionName: 'allowance',
+    enabled: geniiToStake > 0,
     args: [address, '0x48b514bF2ae5f23Ba60454302721E3534ae03e86'],
     watch: true,
     onSuccess(data) {
-      if (GeniiTokenBalance?.value?.toString() > '0' && stakeAllowance.data?.toString() >= GeniiTokenBalance?.value?.toString()) {
+      if (GeniiTokenBalance?.value?.toString() > '0' && stakeAllowance.data?.toString() >= (parseUnits(geniiToStake?.toString(), 15))?.toString()) {
         setApprovalComplete(true)
+      } else {
+        setApprovalComplete(false)
       }
     },
   })
@@ -217,6 +220,15 @@ function Main() {
     },
   })
 
+  useEffect(() => {
+    if (GeniiTokenBalance?.value?.toString() > '0' && stakeAllowance.data?.toString() >= (parseUnits(geniiToStake?.toString(), 15))?.toString()) {
+      setApprovalComplete(true)
+    } else {
+      setApprovalComplete(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [geniiToStake])
+
   return (
     <main className={styles.main}>
       <div className="w-full max-w-xl rounded-xl bg-white/100 dark:bg-[#15181f]/100 p-5 text-center text-[#495264] dark:text-white">
@@ -299,7 +311,9 @@ function Main() {
             </div>
             :
             null}
-            <div className="flex justify-center text-center">
+            <div className="flex-col justify-center text-center">
+              {geniiToStake > 0 ?
+              <>
               <div className="p-1">
                 <button
                   hidden={GeniiTokenBalance?.value.toString() == '0' || approvalComplete}
@@ -325,6 +339,11 @@ function Main() {
               </div>
               :
               null}
+              </>
+              :
+              <div>Input amount of GENII to stake.</div>
+              }
+              {GeniiTokenBalance?.value.toString() > '0' && stakeAllowance?.data && <div>Allowance: {formatUnits(stakeAllowance?.data?.toString(), 15)} GENII</div>}
               {GeniiTokenBalance?.value.toString() == '0' ?
                 <div>You have no GENII tokens to stake!</div>
                 :
