@@ -291,10 +291,10 @@ function Main() {
           </div>
           <dt>Rewards</dt>
             <dd className="break-all">
-              <div className='hidden'>
+              <div>
                 Total Earned: {GeniiRewardsLoading ? 'loading' : GeniiRewards ? formatUnits(GeniiRewards?.toString(), 15)+' NII' : 'n/a'}
               </div>
-              <div className='hidden'>
+              <div>
                 Claimable: {GeniiRewardsEarnedLoading ? 'loading' : GeniiRewardsEarned ? formatUnits(GeniiRewardsEarned?.toString(), 15)+' NII' : 'n/a'}
               </div>
               <div className="p-1">
