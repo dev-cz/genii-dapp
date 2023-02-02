@@ -274,9 +274,9 @@ function Main() {
             </div>
           </div>
           <div className='font semi-bold text-xl'>Current Staking Period</div>
-          <div className='flex justify-between'>
+          <div className='xs:flex-col md:flex justify-between'>
             <div>
-              <div>Total Reward Rate</div>
+              <div>Reward Rate</div>
               <div>{GeniiRewardsRate ? Number(formatUnits(GeniiRewardsRate?.toString(), 15))?.toLocaleString(undefined, {maximumFractionDigits: 2})+' NII' : 'N/A'} per/sec</div>
             </div>
             <div>
@@ -316,19 +316,19 @@ function Main() {
               <div className='px-2'>
                 <dt>My GENII Balance</dt>
                 <dd>
-                  {isGeniiTokenBalanceLoading ? 'loading' : GeniiTokenBalance ? `${GeniiTokenBalance?.formatted} ${GeniiTokenBalance?.symbol}` : 'n/a'}
+                  {isGeniiTokenBalanceLoading ? 'loading' : GeniiTokenBalance ? `${Number(GeniiTokenBalance?.formatted)?.toLocaleString(undefined, {maximumFractionDigits: 2})} ${GeniiTokenBalance?.symbol}` : 'n/a'}
                 </dd>
               </div>
               <div className='px-2'>
                 <dt>My Staked GENII</dt>
                 <dd>
-                  {GeniiStakedBalanceLoading ? 'loading' : GeniiStakedBalance ? `${formatUnits(GeniiStakedBalance?.toString(), 15)} ${GeniiTokenBalance?.symbol}` : 'n/a'}
+                  {GeniiStakedBalanceLoading ? 'loading' : GeniiStakedBalance ? `${Number(formatUnits(GeniiStakedBalance?.toString(), 15))?.toLocaleString(undefined, {maximumFractionDigits: 2})} ${GeniiTokenBalance?.symbol}` : 'n/a'}
                 </dd>
               </div>
               <div className='px-2'>
                 <dt>My NII Balance</dt>
                 <dd>
-                  {isNahmiiTokenBalanceLoading ? 'loading' : NahmiiTokenBalance ? `${NahmiiTokenBalance?.formatted} ${NahmiiTokenBalance?.symbol}` : 'n/a'}
+                  {isNahmiiTokenBalanceLoading ? 'loading' : NahmiiTokenBalance ? `${Number(NahmiiTokenBalance?.formatted)?.toLocaleString(undefined, {maximumFractionDigits: 2})} ${NahmiiTokenBalance?.symbol}` : 'n/a'}
                 </dd>
               </div>
             </div>
