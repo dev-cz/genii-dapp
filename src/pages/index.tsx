@@ -70,6 +70,12 @@ function Main() {
     functionName: 'duration',
   })
 
+  const { data: GeniiRewardsFinish, isError: GeniiRewardsFinishError, isLoading: GeniiRewardsFinishLoading } = useContractRead({
+    address: GeniiStakingContract,
+    abi: GeniiStakingABI,
+    functionName: 'periodFinish',
+  })
+
   const { data: GeniiRewardsRate, isError: GeniiRewardsRateError, isLoading: GeniiRewardsRateLoading } = useContractRead({
     address: GeniiStakingContract,
     abi: GeniiStakingABI,
@@ -252,18 +258,35 @@ function Main() {
               <div>{TotalGeniiStaked ? Number(formatUnits(TotalGeniiStaked?.toString(), 15))?.toLocaleString(undefined, {maximumFractionDigits: 2})+' GENII' : 'n/a'}</div>
             </div>
           </div>
+          <div className='font semi-bold text-xl'>Current Staking Period</div>
           <div className='flex justify-between'>
             <div>
-              <div>Reward Rate</div>
-              <div>{Number(GeniiRewardsRate)} per/sec</div>
+              <div>Total Reward Rate</div>
+              <div>{GeniiRewardsRate ? Number(formatUnits(GeniiRewardsRate?.toString(), 15))?.toLocaleString(undefined, {maximumFractionDigits: 2})+' NII' : 'N/A'} per/sec</div>
             </div>
             <div>
               <div>Start Date</div>
-              <div>N/A</div>
+              <div>
+                {new Date((Number(GeniiRewardsFinish) - Number(GeniiRewardsDuration)) * 1000).toLocaleDateString('en-US', {
+                  month: '2-digit',
+                  day: '2-digit',
+                  year: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </div>
             </div>
             <div>
               <div>End Date</div>
-              <div>N/A</div>
+              <div>
+                {new Date(Number(GeniiRewardsFinish) * 1000).toLocaleDateString('en-US', {
+                  month: '2-digit',
+                  day: '2-digit',
+                  year: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </div>
             </div>
             <div>
               <div>Duration</div>
@@ -289,7 +312,7 @@ function Main() {
               </div>
             </div>
           </div>
-          <dt>Rewards</dt>
+          <dt>My Rewards</dt>
             <dd className="break-all">
               <div>
                 Total Earned: {GeniiRewardsLoading ? 'loading' : GeniiRewards ? formatUnits(GeniiRewards?.toString(), 15)+' NII' : 'n/a'}
