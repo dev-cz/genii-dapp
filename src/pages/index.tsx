@@ -5,7 +5,7 @@ import { useNetwork, useSwitchNetwork, useAccount, useBalance, useContractRead, 
 import ConnectWallet from 'components/Connect/ConnectWallet'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import GeniiStakingABI from '../contracts/geniiStakingABI.json'
-import { ethers } from 'ethers'
+import { BigNumber, ethers } from 'ethers'
 import { formatUnits, parseUnits } from 'ethers/lib/utils.js'
 
 export default function Home() {
@@ -40,6 +40,7 @@ function Header() {
 function Main() {
   let GeniiContract = '0x87Db20d78BA4d80cd99357B05BB8c75eC87836Fd';
   let GeniiStakingContract = '0x48b514bF2ae5f23Ba60454302721E3534ae03e86';
+  let NahmiiContract = '0x7c8155909cd385F120A56eF90728dD50F9CcbE52';
 
   const { address, isConnected, connector } = useAccount()
   const { chain, chains } = useNetwork()
@@ -62,6 +63,11 @@ function Main() {
   const { data: GeniiTokenBalance, isLoading: isGeniiTokenBalanceLoading, refetch: GeniiTokenBalanceRefetch } = useBalance({
     address: address,
     token: '0x87Db20d78BA4d80cd99357B05BB8c75eC87836Fd',
+  })
+
+  const { data: NahmiiTokenBalance, isLoading: isNahmiiTokenBalanceLoading, refetch: NahmiiTokenBalanceRefetch } = useBalance({
+    address: address,
+    token: '0x7c8155909cd385F120A56eF90728dD50F9CcbE52',
   })
 
   const { data: GeniiRewardsDuration, isError: GeniiRewardsDurationError, isLoading: GeniiRewardsDurationLoading } = useContractRead({
@@ -100,6 +106,13 @@ function Main() {
     address: GeniiStakingContract,
     abi: GeniiStakingABI,
     functionName: 'rewards',
+    args: [address],
+  })
+
+  const { data: GeniiRewardsPerToken, isError: GeniiRewardsPerTokenError, isLoading: GeniiRewardsPerTokenLoading } = useContractRead({
+    address: GeniiStakingContract,
+    abi: GeniiStakingABI,
+    functionName: 'userRewardPerTokenPaid',
     args: [address],
   })
 
@@ -238,6 +251,8 @@ function Main() {
     },
   })
 
+  let totalNiiClaimed = GeniiRewardsPerToken ? Number(formatUnits(GeniiRewardsPerToken?.toString(), 18)) * Number(formatUnits(GeniiStakedBalance?.toString(), 15)) : 0;
+
   useEffect(() => {
     if (GeniiTokenBalance?.value?.toString() > '0' && stakeAllowance.data?.toString() >= (parseUnits(geniiToStake?.toString(), 15))?.toString()) {
       setApprovalComplete(true)
@@ -310,12 +325,18 @@ function Main() {
                   {GeniiStakedBalanceLoading ? 'loading' : GeniiStakedBalance ? `${formatUnits(GeniiStakedBalance?.toString(), 15)} ${GeniiTokenBalance?.symbol}` : 'n/a'}
                 </dd>
               </div>
+              <div className='px-2'>
+                <dt>My NII Balance</dt>
+                <dd>
+                  {isNahmiiTokenBalanceLoading ? 'loading' : NahmiiTokenBalance ? `${NahmiiTokenBalance?.formatted} ${NahmiiTokenBalance?.symbol}` : 'n/a'}
+                </dd>
+              </div>
             </div>
           </div>
           <dt>My Rewards</dt>
             <dd className="break-all">
               <div>
-                Total Earned: {GeniiRewardsLoading ? 'loading' : GeniiRewards ? formatUnits(GeniiRewards?.toString(), 15)+' NII' : 'n/a'}
+                Total Claimed: {GeniiRewardsLoading ? 'loading' : GeniiRewardsPerToken ? totalNiiClaimed?.toLocaleString(undefined, {maximumFractionDigits: 4})+' NII' : 'n/a'}
               </div>
               <div>
                 Claimable: {GeniiRewardsEarnedLoading ? 'loading' : GeniiRewardsEarned ? formatUnits(GeniiRewardsEarned?.toString(), 15)+' NII' : 'n/a'}
