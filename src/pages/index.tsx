@@ -501,7 +501,7 @@ function Footer() {
   return (
     <footer className={styles.footer}>
       <div className="flex items-center h-full text-center font-bold text-xl text-transparent bg-clip-text bg-gradient-to-r from-[#ff44c9] to-[#00b8fa]">
-        Created by: ꧁CryptoZii꧂
+        Created by: ꧁Ninja Dev꧂
       </div>
       <div className="flex items-center text-white">Note: This dApp is community managed and not officially supported by the nahmii team.</div>
       <div></div>
